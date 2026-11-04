@@ -1,0 +1,53 @@
+# Follow pull request
+
+Turn on Follow in a chat's Pull Request tab, and new review comments, requested changes and failed checks go to the chat's agent as one message, a couple of minutes after they arrive. It stops when the pull request is merged or closed.
+
+An [Abstract](https://github.com/endeken-com/abstract) plugin. It shipped inside the app
+until ABS-190 moved it here, with its history.
+
+## Install
+
+In Abstract, Settings › Plugins lists it from the reviewed registry, or use
+**Add from GitHub…** or the command line:
+
+```sh
+abstract plugin add endeken-com/follow-pr
+```
+
+That installs the commit the [registry](https://github.com/endeken-com/abstract-plugins)
+approved. `abstract plugin add endeken-com/abstract-plugin-follow-pr` installs this
+repository's latest commit instead, marked "Not reviewed".
+
+## What it can access
+
+- See your chats
+- See when your agents worked
+- See your chats' pull requests
+- Send messages to your chats
+- Keep its own settings
+
+You review this list when you turn it on, and an update that asks for more stays off
+until you review it again.
+
+## Development
+
+The plugin is the repository's root: `manifest.json` and the files beside it. Only
+those are installed; `.gitattributes` keeps this README, `Tests/` and `.github/` out of
+the package. There is no build step.
+
+CI checks the package the way Abstract does (`.github/check-package.py`) and runs
+`Tests/` inside Abstract's own test target, against Abstract's `main`.
+To run them locally, from a checkout of `endeken-com/abstract`:
+
+```sh
+package=Abstract/Resources/Plugins/follow-pr.abstractplugin
+rm -rf "$package" && mkdir -p "$package"
+git -C ../abstract-plugin-follow-pr archive HEAD | tar -x -C "$package"
+cp ../abstract-plugin-follow-pr/Tests/*.swift Packages/AbstractCore/Tests/AbstractCoreTests/
+[ -d ../abstract-plugin-follow-pr/Tests/Fixtures ] &&
+  cp -R ../abstract-plugin-follow-pr/Tests/Fixtures/. Packages/AbstractCore/Tests/AbstractCoreTests/Fixtures/
+cd Packages/AbstractCore && swift test --filter FollowPRPluginTests
+```
+
+A new version needs a pull request to the registry with the new commit before
+people who installed the listing are offered it.
